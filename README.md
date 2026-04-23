@@ -1,25 +1,11 @@
 # Hadoop Word Count — ECE Cloud Computing Homework 1
-**UMass Amherst | Team Members:** [Name 1], [Name 2], [Name 3]
+**UMass Amherst | Team Members:** Kyle Belanger, Santiago Alzate
 
 ---
 
 ## What This Does
 Runs a MapReduce Word Count job across a 3-node Hadoop cluster on AWS EC2.
 One master node (NameNode + ResourceManager) and two worker nodes (DataNodes).
-
----
-
-## Files Included
-| File | Purpose |
-|------|---------|
-| `1_setup_master.sh` | Run once on the master EC2 instance |
-| `2_setup_worker.sh` | Run on each of the two worker EC2 instances |
-| `3_configure_cluster.sh` | Run on master after both workers are ready |
-| `4_run_wordcount.sh` | Compiles the Java code and runs the Hadoop job |
-| `WordCount.java` | The MapReduce source code |
-| `input.txt` | The book used as input (~1000+ pages) |
-
----
 
 ## EC2 Setup (Do This First in AWS Console)
 
@@ -36,7 +22,7 @@ One master node (NameNode + ResourceManager) and two worker nodes (DataNodes).
 
 ## Step-by-Step Instructions
 
-### Step 1 — Setup the Master Node
+### Step 1: Setup the Master Node
 SSH into the master instance:
 ```bash
 ssh -i your-key.pem ubuntu@<MASTER_PUBLIC_IP>
@@ -56,7 +42,7 @@ sudo cat /home/hadoop/.ssh/id_rsa.pub
 
 ---
 
-### Step 2 — Setup Both Worker Nodes
+### Step 2: Setup Both Worker Nodes
 For each worker (repeat for both `worker1` and `worker2`):
 
 ```bash
@@ -86,7 +72,7 @@ sudo -u hadoop bash -c 'echo "<PASTE_MASTER_PUBLIC_KEY_HERE>" >> /home/hadoop/.s
 
 ---
 
-### Step 3 — Configure the Cluster (Back on Master)
+### Step 3: Configure the Cluster (Back on Master)
 SSH back into the master node. Upload `3_configure_cluster.sh`.
 
 **Edit the script** — replace the placeholder IPs:
@@ -109,7 +95,7 @@ You can also verify in a browser:
 
 ---
 
-### Step 4 — Run the Word Count Job
+### Step 4: Run the Word Count Job
 Upload `4_run_wordcount.sh`, `WordCount.java`, and `input.txt` to the master:
 ```bash
 scp -i your-key.pem 4_run_wordcount.sh WordCount.java input.txt ubuntu@<MASTER_PUBLIC_IP>:~
@@ -123,11 +109,6 @@ sudo -u hadoop ./4_run_wordcount.sh
 
 Results will print to screen and also save to `wordcount_results.txt`.
 
-**Take screenshots of:**
-- The job running output (map/reduce progress percentages)
-- The top word counts printed at the end
-- The HDFS Web UI showing your input/output files
-
 ---
 
 ## Stopping the Cluster
@@ -139,11 +120,3 @@ sudo -u hadoop /home/hadoop/hadoop/sbin/stop-dfs.sh
 Then stop/terminate the EC2 instances from the AWS Console.
 
 ---
-
-## Troubleshooting
-| Problem | Fix |
-|---------|-----|
-| SSH to worker fails | Make sure master's public key is in worker's `authorized_keys` |
-| "Connection refused" on port 9000 | Check EC2 security group has port 9000 open |
-| Only 1 datanode showing | Worker script may not have finished — re-run `2_setup_worker.sh` |
-| NameNode won't start | Run `hdfs namenode -format -force` then restart |
